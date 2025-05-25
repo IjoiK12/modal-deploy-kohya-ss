@@ -1,0 +1,8 @@
+[modal_settings]
+allow_concurrent_inputs = 10
+container_idle_timeout = 3600 # 10 минут
+timeout = 7200             # 1 час
+gpu = "H100"               # Можно изменить на A100 или H100 для большей производительности
+
+[kohya_settings]
+port = 8000
