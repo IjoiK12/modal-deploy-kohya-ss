@@ -14,7 +14,7 @@ KOHYA_REPO_URL = "https://github.com/bmaltais/kohya_ss.git"
 
 kohya_image = (
     modal.Image.from_registry(
-        "nvidia/cuda:11.8.0-cudnn8-devel-ubuntu22.04", add_python=PYTHON_VERSION
+        "nvidia/cuda:12.8.1-cudnn-devel-ubuntu24.04", add_python=PYTHON_VERSION
     )
     .env({
         "DEBIAN_FRONTEND": "noninteractive",
@@ -24,15 +24,16 @@ kohya_image = (
     .apt_install(
         "git",
         "wget",
-        "libgl1-mesa-glx",
+        "libgl1",
         "libglib2.0-0",
         "python3-tk",
         "libjpeg-dev",
         "libpng-dev",
         "google-perftools",
+        "libgl1-mesa-dri",
     )
     .env({"KOHYA_VERSION_DATE": "2025-05-25"})
-    .env({"LD_PRELOAD": "/usr/lib/x86_64-linux-gnu/libtcmalloc.so.4"})
+    .env({"LD_PRELOAD": "/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4"})
     .run_commands(
         "set -ex",
         "pip install --upgrade pip",
@@ -54,19 +55,14 @@ kohya_image = (
         "echo 'Удаление предыдущих версий torch, torchvision, torchaudio, triton...'",
         "pip uninstall -y torch torchvision torchaudio triton",
 
-        "echo 'Установка PyTorch 2.1.2+cu118...'",
-        "pip install torch==2.1.2+cu118 torchvision==0.16.2+cu118 torchaudio==2.1.2+cu118 --extra-index-url https://download.pytorch.org/whl/cu118",
+        "pip install torch==2.8.0+cu128 torchvision==0.23.0+cu128 torchaudio==2.8.0+cu128 --extra-index-url https://download.pytorch.org/whl/cu128",
 
-        "echo 'Установка xformers==0.0.23.post1+cu118...'",
-        "pip install xformers==0.0.23.post1+cu118 --index-url https://download.pytorch.org/whl/cu118",
+        "pip install xformers --index-url https://download.pytorch.org/whl/cu128",
 
-        "echo 'Установка bitsandbytes==0.41.1...'",
-        "pip install bitsandbytes==0.41.1",
+        "pip install bitsandbytes",
 
-        "echo 'Установка diffusers...'",
         "pip install diffusers",
 
-        "echo 'Установка accelerate...'",
         "pip install accelerate",
 
         "accelerate config default",
@@ -142,7 +138,7 @@ def run_kohya_gui():
         f"cd {Paths.KOHYA_BASE} && "
         f"accelerate launch --num_cpu_threads_per_process=4 {kohya_script} "
         f"--listen 0.0.0.0 --server_port {PORT} --headless"
-        f" --noverify"
+        f" --noverify --share"
     )
     subprocess.Popen(start_command, shell=True)
 
