@@ -19,7 +19,7 @@ kohya_image = (
     .env({
         "DEBIAN_FRONTEND": "noninteractive",
         "TZ": "Etc/UTC",
-        "PYTORCH_CUDA_ALLOC_CONF": "max_split_size_mb:128" # Example, you can use: 64 or 32 also
+        "PYTORCH_CUDA_ALLOC_CONF": "max_split_size_mb:64,expandable_segments:True" # Example, you can use: 64 or 32 also
     })
     .apt_install(
         "git",
