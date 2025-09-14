@@ -88,12 +88,16 @@ try:
     CONTAINER_IDLE_TIMEOUT = modal_settings.get('container_idle_timeout', 600)
     TIMEOUT = modal_settings.get('timeout', 3600)
     GPU_CONFIG = modal_settings.get('gpu', "A10G")
+    CPU_CONFIG = modal_settings.get('cpu', "4")
+    MEMORY_CONFIG = modal_settings.get('memory', "8192")
     PORT = kohya_settings.get('port', 8000)
 except Exception as e:
     ALLOW_CONCURRENT_INPUTS = 5
     CONTAINER_IDLE_TIMEOUT = 300
     TIMEOUT = 1800
     GPU_CONFIG = "A10G"
+    CPU_CONFIG = 4
+    MEMORY_CONFIG = 8192
     PORT = 8000
 
 app = modal.App(name="kohya-ss-gui", image=kohya_image)
@@ -114,6 +118,8 @@ outputs_vol = modal.Volume.from_name("kohya-outputs", create_if_missing=True)
 configs_vol = modal.Volume.from_name("kohya-configs", create_if_missing=True)
 
 @app.function(
+    memory=MEMORY_CONFIG,
+    cpu=CPU_CONFIG,
     gpu=GPU_CONFIG,
     timeout=TIMEOUT,
     scaledown_window=CONTAINER_IDLE_TIMEOUT,
